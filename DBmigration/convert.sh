@@ -1,7 +1,7 @@
 #!/bin/bash
 DATEFORM=$(date +"%Y%m%d")
 read -p "Where is the 'decc' directory? " STOREDIR
-mysqldump -h 173.255.254.42 -decc clients contacts clients_has_contacts billable projects types orders parts batches --compatible=postgresql --skip-add-locks > "$STOREDIR/decc/DBmigration/dumps/deccdump$DATEFORM.sql"
+mysqldump -h 173.255.254.42 decc clients contacts clients_has_contacts billable projects types orders parts batches --compatible=postgresql --skip-add-locks > "$STOREDIR/decc/DBmigration/dumps/deccdump$DATEFORM.sql"
 echo 'dumped'
 
 echo 'DROP SCHEMA "tempdecc" CASCADE;
