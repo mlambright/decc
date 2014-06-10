@@ -63,10 +63,10 @@ def findTypes(projectID, cursor):
 
 def createPart(orderID, typeID, state, rush, van, match, quad, cursor, db):
   cursor.execute('''INSERT INTO parts (state, item_count, orders_idorders, 
-                      types_idtypes, rush, van, quad, `match`, destroy_files,
-                      return_files, batch_count)
-                      VALUES ('{0}', 0, {1}, {2}, {3}, {4}, {5}, {6}, 0, 0, 0)
-                      '''.format(state, orderID, typeID, rush, van, quad, match))
+                    types_idtypes, rush, van, quad, `match`, destroy_files,
+                    return_files, batch_count)
+                    VALUES ('{0}', 0, {1}, {2}, {3}, {4}, {5}, {6}, 0, 0, 0)
+                    '''.format(state, orderID, typeID, rush, van, quad, match))
   db.commit()
 
   cursor.execute('''SELECT MAX(idpieces)
