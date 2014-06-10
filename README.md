@@ -2,7 +2,7 @@
 The scripts in this repo can be used to process files for use in the ***DECC*** project.
 
 ##MySQLfilereceipt.py
-This script, when applied to a directory containing ***DECC*** batch scan files, will add records to the MySQL database for each file (recursively), and will move and rename each file to the appropriate convention its use is as follows
+This script, when applied to a directory containing ***DECC*** batch scan files, will add records to the MySQL database for each file (recursively), and will move each file to a user-designated directory and rename each file to the appropriate convention. It is used as follows:
 ```
 python MySQLfilereceipt.py inputPath outputPath
 ```
