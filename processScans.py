@@ -105,7 +105,6 @@ def processPDF(PATH, outputPATH, startNum, clientID, partID, cursor, db):
   totalPages = 0
   print 'Starting ID:\t', startNum
 
-
   if not os.path.exists(outputPATH):
     os.makedirs(outputPATH)
 
