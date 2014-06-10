@@ -14,5 +14,5 @@ This script processes individual xlsx files returned from vendor; it attaches a 
 ```
 python processXLSX.py inputFile outputFile
 ```
-As written, the script assumes a [MySQL option file](http://dev.mysql.com/doc/refman/5.1/en/option-files.html) stored at ~/.my.cnf. That option can be changed at line 54 of the script.
+As written, the script assumes a [MySQL option file](http://dev.mysql.com/doc/refman/5.1/en/option-files.html) stored at ~/.my.cnf. That option can be changed at line 66 of the script.
 This script uses [xlrd](https://pypi.python.org/pypi/xlrd) and [MySQLdb](https://pypi.python.org/pypi/MySQL-python/1.2.5)
