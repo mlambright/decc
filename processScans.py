@@ -1,5 +1,8 @@
 from PyPDF2 import PdfFileReader
-import os, sys, MySQLdb, re, shutil
+from csv import DictReader, DictWriter
+from sys import argv
+import os, MySQLdb, re, shutil
+
 
 def findClients(cursor):
   result = cursor.execute('SELECT idclients, org_name FROM clients')
@@ -19,6 +22,7 @@ def getProject(clientID, cursor):
                              FROM projects
                              WHERE projects.clients_idclients = {0}
                              '''.format(clientID))
+
   value = cursor.fetchall()[0][0]
   return value
 
@@ -28,6 +32,7 @@ def findOrders(projectID, cursor):
                              FROM orders
                              WHERE projects_idprojects = {0}
                              '''.format(projectID))
+
   table = cursor.fetchall()
   orders = [0]
 
@@ -50,6 +55,7 @@ def findTypes(projectID, cursor):
                              FROM types
                              WHERE projects_idprojects = {0}
                              '''.format(projectID))
+
   table = cursor.fetchall()
   types = []
 
@@ -67,6 +73,7 @@ def createPart(orderID, typeID, state, rush, van, match, quad, cursor, db):
                     return_files, batch_count)
                     VALUES ('{0}', 0, {1}, {2}, {3}, {4}, {5}, {6}, 0, 0, 0)
                     '''.format(state, orderID, typeID, rush, van, quad, match))
+
   db.commit()
 
   cursor.execute('''SELECT MAX(idpieces)
@@ -90,6 +97,7 @@ def obtainStartNum(clientID, cursor):
                              ON orders.projects_idprojects = projects.idprojects
                              WHERE projects.clients_idclients = {0}
                              '''.format(clientID))
+
   value = cursor.fetchall()[0][0]
 
   if value is not None:
@@ -99,7 +107,7 @@ def obtainStartNum(clientID, cursor):
   return batchID
 
 
-def processPDF(PATH, outputPATH, startNum, clientID, partID, cursor, db):
+def processPDF(PATH, outputPATH, startNum, partID, cursor, db):
   files = [os.path.join(dp, f) for dp, dn, filenames in os.walk(PATH) for f in filenames]
   batchID = startNum
   totalPages = 0
@@ -143,9 +151,35 @@ def processPDF(PATH, outputPATH, startNum, clientID, partID, cursor, db):
   print 'Ending ID:\t', batchID
 
 
+def processPhysical(PATH, outputPATH, partID, startNum, db, cursor):
+  dictList = []
+  ID = int(startNum)
+
+  with open(PATH, 'r') as file:
+    input = DictReader(file)
+    for item in input:
+      rowInfo = item
+      cursor.execute('''INSERT INTO batches (idbatches, client_filename, submission_date, 
+                        processed_date, parts_idparts) 
+                        VALUES ('{0}', '{1}', curdate(), curdate(), {2});
+                        '''.format(ID, item['Batch Name'], partID))
+
+      db.commit()
+
+      rowInfo['Batch ID'] = ID
+      ID += 1
+
+  with open(outputPATH, 'w') as file:
+    output = DictWriter(file, fieldnames = ['Batch ID', 'Batch Name'], restval = '', delimiter = ',')
+
+    output.writeheader()
+    for row in dictList:
+      output.writerow(row)
+
+
 def main():
-  PATH = sys.argv[1]
-  outputPATH = sys.argv[2]
+  PATH = argv[1]
+  outputPATH = argv[2]
 
   ##MAKE ANY CONNECTION CHANGES HERE (INCLUDING DEFAULT FILE)
   db = MySQLdb.connect(host='173.255.254.42',db='decc',read_default_file='~/.my.cnf')
@@ -181,28 +215,28 @@ def main():
   state = str(raw_input("Which State are these batches related to? ")).upper()
 
   rushResponse = ''
-  while rushResponse not in ['Y', 'N']:
+  while rushResponse.upper() not in ['Y', 'N']:
     rushResponse = str(raw_input('Is this a rush order? (Y/N) '))
   if rushResponse == 'Y':
     rush = 1
   else:
     rush = 0
   vanResponse = ''
-  while vanResponse not in ['Y', 'N']:
+  while vanResponse.upper() not in ['Y', 'N']:
     vanResponse = str(raw_input('VAN entry requested? (Y/N) '))
   if vanResponse == 'Y':
     van = 1
   else:
     van = 0
   matchResponse = ''
-  while matchResponse not in ['Y', 'N']:
+  while matchResponse.upper() not in ['Y', 'N']:
     matchResponse = str(raw_input('VF matching requested? (Y/N) '))
   if matchResponse == 'Y':
     match = 1
   else:
     match = 0
   quadResponse = ''
-  while quadResponse not in ['Y', 'N']:
+  while quadResponse.upper() not in ['Y', 'N']:
     quadResponse = str(raw_input('Quad sharing requested? (Y/N) '))
   if quadResponse == 'Y':
     quad = 1
@@ -212,7 +246,15 @@ def main():
   partID = createPart(orderID, typeID, state, rush, van, match, quad, cursor, db)
   startNum = obtainStartNum(clientID, cursor)
 
-  processPDF(PATH, outputPATH, startNum, clientID, partID, cursor, db)
+  methodResponse = ''
+  while methodResponse.upper() not in ['D', 'P']:
+    methodResponse = str(raw_input('Were the batches transmitted (D)igitally or (P)hysically? '))
+
+  if methodResponse.upper() == 'D':
+    processPDF(PATH, outputPATH, startNum, partID, cursor, db)
+  else:
+    processPhysical(PATH, outputPATH, partID, startNum, db, cursor)
+
   db.close()
 
 
