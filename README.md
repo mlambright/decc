@@ -6,7 +6,7 @@ This script, when applied to a directory containing ***DECC*** batch scan files,
 ```
 python processScans.py inputPath outputPath
 ```
-As written, the script assumes a [MySQL option file](http://dev.mysql.com/doc/refman/5.1/en/option-files.html) stored at ~/.my.cnf. That option can be changed at line 151 of the script.
+As written, the script assumes a [MySQL option file](http://dev.mysql.com/doc/refman/5.1/en/option-files.html) stored at ~/.my.cnf. That option can be changed at line 185 of the script.
 This script uses [PyPDF2](https://pypi.python.org/pypi/PyPDF2/1.22) and [MySQLdb](https://pypi.python.org/pypi/MySQL-python/1.2.5)
 
 ###processXLSX.py
