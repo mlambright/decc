@@ -122,7 +122,6 @@ def processPDF(PATH, outputPATH, startNum, partID, cursor, db):
     extension = re.sub(r'^.*\.(.*?)$', r'\1', item).lower()
     vendorFilename = str("%010d" % (batchID,)) + "." + extension
 
-
     if extension == 'pdf' :
       input = PdfFileReader(item)
       page_count = input.getNumPages()
@@ -166,7 +165,7 @@ def processPhysical(PATH, outputPATH, partID, startNum, db, cursor):
 
       db.commit()
 
-      rowInfo['Batch ID'] = ID
+      rowInfo['Batch ID'] = "%010d" % ID
       dictList.append(rowInfo)
 
       ID += 1
