@@ -167,6 +167,8 @@ def processPhysical(PATH, outputPATH, partID, startNum, db, cursor):
       db.commit()
 
       rowInfo['Batch ID'] = ID
+      dictList.append(rowInfo)
+
       ID += 1
 
   with open(outputPATH, 'w') as file:
