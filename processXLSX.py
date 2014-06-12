@@ -52,8 +52,10 @@ def processXLSX(inputFile, outputFile, db, cursor):
     cursor.execute('''UPDATE batches
                       SET final_item_count = {0},
                       return_date = CURDATE()
-                      WHERE idbatches = {1}
+                      WHERE idbatches = {1};
                       '''.format(countDict[key], key))
+    db.commit()
+
 
   with open(outputFile, 'w') as output:
     dwObject = DictWriter(output, headerList, restval = '', delimiter = ',')
