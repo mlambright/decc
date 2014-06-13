@@ -147,7 +147,7 @@ def processPDF(PATH, outputPATH, startNum, partID, cursor, db):
     batchID += 1
   db.commit()
   print 'Total Pages:\t', totalPages
-  print 'Ending ID:\t', batchID
+  print 'Ending ID:\t', batchID-1
 
 
 def processPhysical(PATH, outputPATH, partID, startNum, db, cursor):
