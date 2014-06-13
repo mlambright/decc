@@ -117,7 +117,7 @@ def processPDF(PATH, outputPATH, startNum, partID, cursor, db):
     os.makedirs(outputPATH)
 
   for item in files:
-    clientFilename = item.replace(PATH, '')
+    clientFilename = re.sub(r'^/', '', item.replace(PATH, ''))
 
     extension = re.sub(r'^.*\.(.*?)$', r'\1', item).lower()
     vendorFilename = str("%010d" % (batchID,)) + "." + extension
