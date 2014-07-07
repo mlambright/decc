@@ -158,9 +158,9 @@ def processPhysical(PATH, outputPATH, partID, startNum, db, cursor):
     input = DictReader(file)
     for item in input:
       rowInfo = item
-      cursor.execute('''INSERT INTO batches (idbatches, client_filename, submission_date, 
+      cursor.execute('''INSERT INTO batches (idbatches, vendor_filename, client_filename, submission_date, 
                         processed_date, parts_idparts) 
-                        VALUES ('{0}', '{1}', curdate(), curdate(), {2});
+                        VALUES ('{0}', '{0}', '{1}', curdate(), curdate(), {2});
                         '''.format(ID, item['Batch Name'], partID))
 
       db.commit()
