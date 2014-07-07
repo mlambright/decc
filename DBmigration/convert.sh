@@ -18,3 +18,6 @@ sudo -u postgres pg_dump decc --data-only > "$STOREDIR/decc/DBmigration/dumps/da
 sudo -u postgres pg_dump decc  > "$STOREDIR/decc/DBmigration/dumps/fullpgdump$DATEFORM.sql"
 
 grep -v '^SET search_path' "$STOREDIR/decc/DBmigration/dumps/datadump$DATEFORM.sql" > temp && mv temp "$STOREDIR/decc/DBmigration/dumps/datadump$DATEFORM.sql"
+grep -v '^SET search_path' "$STOREDIR/decc/DBmigration/dumps/fullpgdump$DATEFORM.sql" > temp && mv temp "$STOREDIR/decc/DBmigration/dumps/fullpgdump$DATEFORM.sql"
+grep -v '^CREATE SCHEMA' "$STOREDIR/decc/DBmigration/dumps/fullpgdump$DATEFORM.sql" > temp && mv temp "$STOREDIR/decc/DBmigration/dumps/fullpgdump$DATEFORM.sql"
+grep -v '^ALTER SCHEMA' "$STOREDIR/decc/DBmigration/dumps/fullpgdump$DATEFORM.sql" > temp && mv temp "$STOREDIR/decc/DBmigration/dumps/fullpgdump$DATEFORM.sql"
