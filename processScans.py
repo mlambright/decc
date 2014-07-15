@@ -1,7 +1,8 @@
 from PyPDF2 import PdfFileReader
 from csv import DictReader, DictWriter
 from sys import argv
-import os, psycopg2, re, shutil
+from db_info import HOST, DB, USER, PASSWORD
+import os, psycopg2, psycopg2.extras, re, shutil
 
 
 
@@ -184,9 +185,7 @@ def main():
   outputPATH = argv[2]
 
   ##MAKE ANY CONNECTION CHANGES HERE
-  os.system('ssh mlambright@decc.neworganizing.com')
-  conn_string = "host='localhost' dbname='noi_websystem' user='mlambright'"
-  db = psycopg2.connect(conn_string)
+  db = psycopg2.connect(host = HOST, database = DB, user = USER, password = PASSWORD)
   cursor = db.cursor()
 
   clients = [1]
@@ -250,7 +249,7 @@ def main():
   partID = createPart(orderID, typeID, state, rush, van, match, quad, cursor, db)
   startNum = obtainStartNum(clientID, cursor)
 
-  methodResponse = ''
+  methodResponse = ''all 
   while methodResponse.upper() not in ['D', 'P']:
     methodResponse = str(raw_input('Were the batches transmitted (D)igitally or (P)hysically? '))
 
