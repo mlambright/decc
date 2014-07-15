@@ -184,7 +184,7 @@ def main():
   outputPATH = argv[2]
 
   ##MAKE ANY CONNECTION CHANGES HERE
-  system('ssh mlambright@decc.neworganizing.com')
+  os.system('ssh mlambright@decc.neworganizing.com')
   conn_string = "host='localhost' dbname='noi_websystem' user='mlambright'"
   db = psycopg2.connect(conn_string)
   cursor = db.cursor()
