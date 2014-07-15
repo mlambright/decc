@@ -1,7 +1,8 @@
 from PyPDF2 import PdfFileReader
 from csv import DictReader, DictWriter
 from sys import argv
-import os, MySQLdb, re, shutil
+import os, psycopg2, re, shutil
+
 
 
 def findClients(cursor):
@@ -182,8 +183,10 @@ def main():
   PATH = argv[1]
   outputPATH = argv[2]
 
-  ##MAKE ANY CONNECTION CHANGES HERE (INCLUDING DEFAULT FILE)
-  db = MySQLdb.connect(host='173.255.254.42',db='decc',read_default_file='~/.my.cnf')
+  ##MAKE ANY CONNECTION CHANGES HERE
+  system('ssh mlambright@decc.neworganizing.com')
+  conn_string = "host='localhost' dbname='noi_websystem' user='mlambright'"
+  db = psycopg2.connect(conn_string)
   cursor = db.cursor()
 
   clients = [1]

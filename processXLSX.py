@@ -1,5 +1,6 @@
-import xlrd, sys, re, MySQLdb
+import xlrd, sys, re, psycopg2
 from csv import DictWriter
+from os import system
 
 def getBatches(cursor):
   cursor.execute('''SELECT idbatches, client_filename
@@ -65,8 +66,12 @@ def processXLSX(inputFile, outputFile, db, cursor):
 
 
 def main():
-  db = MySQLdb.connect(host='173.255.254.42',db='decc',read_default_file='~/.my.cnf')
+  ##MAKE ANY CONNECTION CHANGES HERE
+  system('ssh mlambright@decc.neworganizing.com')
+  conn_string = "host='localhost' dbname='noi_websystem' user='mlambright'"
+  db = psycopg2.connect(conn_string)
   cursor = db.cursor()
+
   processXLSX(sys.argv[1], sys.argv[2], db, cursor)
 
 
