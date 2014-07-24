@@ -139,8 +139,8 @@ def processPDF(PATH, outputPATH, startNum, partID, cursor, db):
                       (idbatches, client_filename, vendor_filename,
                       initial_item_count, submission_date, processed_date,
                       parts_idparts)
-                      VALUES ({0}, '{1}', '{2}', {3}, CURDATE(), CURDATE(), {4})
-                      '''.format(batchID, clientFilename, vendorFilename, page_count, partID))
+                      VALUES (%s, %s, %s, %s, CURDATE(), CURDATE(), %s)
+                      ''', (batchID, clientFilename, vendorFilename, page_count, partID))
 
     shutil.move(item, outfile)
 
