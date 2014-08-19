@@ -1,10 +1,9 @@
 import xlrd, sys, re, psycopg2, psycopg2.extras
 from csv import DictWriter
-from db_info import HOST, DB, USER, PASSWORD
-
+from db_info import HOST, DB, USER
 def getBatches(cursor):
-  cursor.execute('''SELECT idbatches, client_filename
-                    FROM batches''')
+  cursor.execute('''SELECT id, client_filename
+                    FROM decc_form_batch''')
   result = cursor.fetchall()
   batchDict = {}
   for item in result:
@@ -50,10 +49,10 @@ def processXLSX(inputFile, outputFile, db, cursor):
     dictList.append(item)
 
   for key in countDict:
-    cursor.execute('''UPDATE batches
+    cursor.execute('''UPDATE decc_form_batch
                       SET final_item_count = {0},
-                      return_date = CURDATE()
-                      WHERE idbatches = {1};
+                      return_date = current_date
+                      WHERE id = {1};
                       '''.format(countDict[key], key))
     db.commit()
 
@@ -67,7 +66,7 @@ def processXLSX(inputFile, outputFile, db, cursor):
 
 def main():
   ##MAKE ANY CONNECTION CHANGES HERE
-  db = psycopg2.connect(host = HOST, database = DB, user = USER, password = PASSWORD)
+  db = psycopg2.connect(host = HOST, database = DB, user = USER)
   cursor = db.cursor()
 
   processXLSX(sys.argv[1], sys.argv[2], db, cursor)
