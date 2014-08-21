@@ -135,12 +135,21 @@ def processPDF(PATH, outputPATH, startNum, partID, cursor, db):
     else:
       outfile = outputPATH + '/' + vendorFilename
 
+<<<<<<< HEAD
     cursor.execute('''INSERT INTO decc_form_batch
                       (id, client_filename, vendor_filename,
                       item_count, submission_date, processed_date,
                       part_id, original_filename)
                       VALUES ({0}, '{1}', '{2}', {3}, current_date, current_date, {4}, 1)
                       '''.format(batchID, clientFilename, vendorFilename, page_count, partID))
+=======
+    cursor.execute('''INSERT INTO batches
+                      (idbatches, client_filename, vendor_filename,
+                      initial_item_count, submission_date, processed_date,
+                      parts_idparts)
+                      VALUES (%s, %s, %s, %s, CURDATE(), CURDATE(), %s)
+                      ''', (batchID, clientFilename, vendorFilename, page_count, partID))
+>>>>>>> 571025234e0905e06552fcd8bd8e3b8d3d214c65
 
     shutil.move(item, outfile)
 
