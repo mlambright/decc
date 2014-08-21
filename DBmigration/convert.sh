@@ -9,7 +9,9 @@ CREATE SCHEMA "tempdecc";
 SET search_path = "tempdecc";' | cat - "$STOREDIR/decc/DBmigration/dumps/deccdump$DATEFORM.sql" > temp && mv temp "$STOREDIR/decc/DBmigration/dumps/deccdump$DATEFORM.sql"
 
 sed -e "s,int(11),integer,g" "$STOREDIR/decc/DBmigration/dumps/deccdump$DATEFORM.sql" > temp && mv temp "$STOREDIR/decc/DBmigration/dumps/deccdump$DATEFORM.sql"
+sed -e "s,Farmer\\\'s,Farmer''s,g" "$STOREDIR/decc/DBmigration/dumps/deccdump$DATEFORM.sql" > temp && mv temp "$STOREDIR/decc/DBmigration/dumps/deccdump$DATEFORM.sql"
 grep -v '^  KEY' "$STOREDIR/decc/DBmigration/dumps/deccdump$DATEFORM.sql" > temp && mv temp "$STOREDIR/decc/DBmigration/dumps/deccdump$DATEFORM.sql"
+
 
 sudo -u postgres psql decc < "$STOREDIR/decc/DBmigration/dumps/deccschema.sql"
 sudo -u postgres psql decc < "$STOREDIR/decc/DBmigration/dumps/deccdump$DATEFORM.sql"
