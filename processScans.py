@@ -1,13 +1,11 @@
 from PyPDF2 import PdfFileReader
 from csv import DictReader, DictWriter
 from sys import argv
-from db_info import HOST, DB, USER, PASSWORD
+from db_info import HOST, DB, USER
 import os, psycopg2, psycopg2.extras, re, shutil
 
-
-
 def findClients(cursor):
-  result = cursor.execute('SELECT idclients, org_name FROM clients')
+  result = cursor.execute('SELECT id, org_name FROM decc_form_client')
   table = cursor.fetchall()
   clients = []
 
@@ -20,9 +18,9 @@ def findClients(cursor):
 
 
 def getProject(clientID, cursor):
-  result = cursor.execute('''SELECT MAX(idprojects)
-                             FROM projects
-                             WHERE projects.clients_idclients = {0}
+  result = cursor.execute('''SELECT project_id
+                             FROM decc_form_client
+                             WHERE id = {0}
                              '''.format(clientID))
 
   value = cursor.fetchall()[0][0]
@@ -30,9 +28,9 @@ def getProject(clientID, cursor):
 
 
 def findOrders(projectID, cursor):
-  result = cursor.execute('''SELECT idorders AS ID, order_date AS DATE
-                             FROM orders
-                             WHERE projects_idprojects = {0}
+  result = cursor.execute('''SELECT id AS ID, order_date AS DATE
+                             FROM decc_form_order
+                             WHERE project_id = {0}
                              '''.format(projectID))
 
   table = cursor.fetchall()
@@ -47,15 +45,15 @@ def findOrders(projectID, cursor):
 
 
 def createOrder(projectID, cursor):
-  cursor.execute('''INSERT INTO orders (order_date, projects_idprojects, digital)
-                    VALUES (CURDATE(), {0}, TRUE);
+  cursor.execute('''INSERT INTO decc_form_order (order_date, project_id, digital)
+                    VALUES (current_date, {0}, TRUE);
                     '''.format(projectID))
 
 
 def findTypes(projectID, cursor):
-  result = cursor.execute('''SELECT idtypes AS ID, type_name AS NAME
-                             FROM types
-                             WHERE projects_idprojects = {0}
+  result = cursor.execute('''SELECT id AS ID, type_name AS NAME
+                             FROM decc_form_type
+                             WHERE project_id = {0}
                              '''.format(projectID))
 
   table = cursor.fetchall()
@@ -70,17 +68,17 @@ def findTypes(projectID, cursor):
 
 
 def createPart(orderID, typeID, state, rush, van, match, quad, cursor, db):
-  cursor.execute('''INSERT INTO parts (state, item_count, orders_idorders, 
-                    types_idtypes, rush, van, quad, `match`, destroy_files,
+  cursor.execute('''INSERT INTO decc_form_part (state, item_count, order_id, 
+                    form_type_id, rush, van, quad, "match", destroy_files,
                     return_files, batch_count)
-                    VALUES ('{0}', 0, {1}, {2}, {3}, {4}, {5}, {6}, 0, 0, 0)
+                    VALUES ('{0}', 0, {1}, {2}, bool({3}), bool({4}), bool({5}), bool({6}), bool(0), bool(0), 0)
                     '''.format(state, orderID, typeID, rush, van, quad, match))
 
   db.commit()
 
-  cursor.execute('''SELECT MAX(idpieces)
-                      FROM parts
-                      WHERE orders_idorders = {0}
+  cursor.execute('''SELECT MAX(id)
+                      FROM decc_form_part
+                      WHERE order_id = {0}
                       '''.format(orderID))
 
   result = cursor.fetchall()[0][0]
@@ -89,15 +87,15 @@ def createPart(orderID, typeID, state, rush, van, match, quad, cursor, db):
 
 
 def obtainStartNum(clientID, cursor):
-  result = cursor.execute('''SELECT MAX(idbatches) + 1 AS ID
-                             FROM batches
-                             INNER JOIN parts
-                             ON batches.parts_idparts = parts.idpieces
-                             INNER JOIN orders
-                             ON parts.orders_idorders = orders.idorders
-                             INNER JOIN projects
-                             ON orders.projects_idprojects = projects.idprojects
-                             WHERE projects.clients_idclients = {0}
+  result = cursor.execute('''SELECT MAX(decc_form_batch.id) + 1 AS ID
+                             FROM decc_form_batch
+                             INNER JOIN decc_form_part
+                             ON decc_form_batch.part_id = decc_form_part.id
+                             INNER JOIN decc_form_order
+                             ON decc_form_part.order_id = decc_form_order.id
+                             INNER JOIN decc_form_client
+                             ON decc_form_order.project_id = decc_form_client.project_id
+                             WHERE decc_form_client.id = {0}
                              '''.format(clientID))
 
   value = cursor.fetchall()[0][0]
@@ -137,11 +135,11 @@ def processPDF(PATH, outputPATH, startNum, partID, cursor, db):
     else:
       outfile = outputPATH + '/' + vendorFilename
 
-    cursor.execute('''INSERT INTO batches
-                      (idbatches, client_filename, vendor_filename,
-                      initial_item_count, submission_date, processed_date,
-                      parts_idparts)
-                      VALUES ({0}, '{1}', '{2}', {3}, CURDATE(), CURDATE(), {4})
+    cursor.execute('''INSERT INTO decc_form_batch
+                      (id, client_filename, vendor_filename,
+                      item_count, submission_date, processed_date,
+                      part_id, original_filename)
+                      VALUES ({0}, '{1}', '{2}', {3}, current_date, current_date, {4}, 1)
                       '''.format(batchID, clientFilename, vendorFilename, page_count, partID))
 
     shutil.move(item, outfile)
@@ -160,9 +158,9 @@ def processPhysical(PATH, outputPATH, partID, startNum, db, cursor):
     input = DictReader(file)
     for item in input:
       rowInfo = item
-      cursor.execute('''INSERT INTO batches (idbatches, vendor_filename, client_filename, submission_date, 
-                        processed_date, parts_idparts) 
-                        VALUES ('{0}', '{0}', '{1}', curdate(), curdate(), {2});
+      cursor.execute('''INSERT INTO decc_form_batch (id, vendor_filename, client_filename, submission_date, 
+                        processed_date, part_id, original_filename) 
+                        VALUES ('{0}', '{0}', '{1}', current_date, current_date, {2}, '1');
                         '''.format(ID, item['Batch Name'], partID))
 
       db.commit()
@@ -185,7 +183,7 @@ def main():
   outputPATH = argv[2]
 
   ##MAKE ANY CONNECTION CHANGES HERE
-  db = psycopg2.connect(host = HOST, database = DB, user = USER, password = PASSWORD)
+  db = psycopg2.connect(host = HOST, database = DB, user = USER)
   cursor = db.cursor()
 
   clients = [1]
@@ -249,7 +247,7 @@ def main():
   partID = createPart(orderID, typeID, state, rush, van, match, quad, cursor, db)
   startNum = obtainStartNum(clientID, cursor)
 
-  methodResponse = ''all 
+  methodResponse = ''
   while methodResponse.upper() not in ['D', 'P']:
     methodResponse = str(raw_input('Were the batches transmitted (D)igitally or (P)hysically? '))
 
