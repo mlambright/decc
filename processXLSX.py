@@ -1,6 +1,9 @@
 import xlrd, sys, re, psycopg2, psycopg2.extras
 from csv import DictWriter
 from db_info import HOST, DB, USER
+import deccvrqc
+
+
 def getBatches(cursor):
   cursor.execute('''SELECT id, client_filename
                     FROM decc_form_batch''')
