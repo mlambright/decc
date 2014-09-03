@@ -5,7 +5,7 @@ import deccvrqc
 
 
 def getBatches(cursor):
-  cursor.execute('''SELECT id, client_filename
+  cursor.execute('''SELECT id, original_filename
                     FROM decc_form_batch''')
   result = cursor.fetchall()
   batchDict = {}
