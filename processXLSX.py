@@ -31,8 +31,6 @@ def processXLSX(inputFile, outputFile, db, cursor):
   dictList = []
   countDict = {}
   batchIDfieldName = ''
-
-  batchIDfieldName = ''
   for item in drObject:
     for key in item:
       if re.search('[Bb][Aa][Tt][Cc][Hh]', str(key)):

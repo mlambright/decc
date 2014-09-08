@@ -6,13 +6,19 @@ This script, when applied to a directory containing ***DECC*** batch scan files,
 ```
 python processScans.py inputPath outputPath
 ```
-As written, the script assumes a [MySQL option file](http://dev.mysql.com/doc/refman/5.1/en/option-files.html) stored at ~/.my.cnf. That option can be changed at line 185 of the script.
-This script uses [PyPDF2](https://pypi.python.org/pypi/PyPDF2/1.22) and [MySQLdb](https://pypi.python.org/pypi/MySQL-python/1.2.5)
+As written, the script assumes a [PostgreSQL Password file](http://www.postgresql.org/docs/9.3/static/libpq-pgpass.html)
+This script uses [PyPDF2](https://pypi.python.org/pypi/PyPDF2/1.22) and [psycopg2](http://initd.org/psycopg/)
 
 ###processXLSX.py
 This script processes individual xlsx files returned from vendor; it attaches a batch name to each record, writes out a final csv, and updates the database with final counts. It is used as follows:
 ```
 python processXLSX.py inputFile outputFile
 ```
-As written, the script assumes a [MySQL option file](http://dev.mysql.com/doc/refman/5.1/en/option-files.html) stored at ~/.my.cnf. That option can be changed at line 66 of the script.
-This script uses [xlrd](https://pypi.python.org/pypi/xlrd) and [MySQLdb](https://pypi.python.org/pypi/MySQL-python/1.2.5)
+As written, the script assumes a [PostgreSQL Password file](http://www.postgresql.org/docs/9.3/static/libpq-pgpass.html)
+This script uses [PyPDF2](https://pypi.python.org/pypi/PyPDF2/1.22), [psycopg2](http://initd.org/psycopg/), and [xlrd](https://pypi.python.org/pypi/xlrd)
+
+###vrqc.py
+This script quality checks voter registration files returned from vendor. It is called as follows
+```
+python vrqc.py inputFile outputFile
+```
