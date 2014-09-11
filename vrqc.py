@@ -1,5 +1,4 @@
 from csv import DictReader, DictWriter
-from zipfile import ZipFile
 from bs4 import BeautifulSoup
 import urllib2, xlrd, sys, os, json
 
