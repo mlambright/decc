@@ -10,7 +10,7 @@ def getBatches(cursor):
   result = cursor.fetchall()
   batchDict = {}
   for item in result:
-    batchDict[str(item[0])] = str(item[1])
+    batchDict[str(int(item[0]))] = str(item[1])
   return batchDict
 
 
