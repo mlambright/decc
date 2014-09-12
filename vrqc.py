@@ -193,8 +193,8 @@ if __name__ == '__main__':
   'HomeAreaCode', 'HomePhone', 'FullCurrentStreetAddress', 'CurrentStreetAddress1', 'CurrentStreetAddress2', 'CurrentCity', 
   'CurrentState', 'CurrentZip', 'FullMailingStreetAddress', 'MailingAddress1', 'MailingAddress2', 'MailingCity', 'MailingState', 'MailingZip', 'Race', 
   'Party', 'Gender', 'FullDateSigned', 'DateSignedmm', 'Datesigneddd', 'Datesignedyy', 'FullMobilePhone', 'MobilePhoneAreaCode', 'MobilePhone', 
-  'EmailAddress', 'Batch_ID', 'Voulnteer', 'License', 'PreviousName', 'FullPreviousStreetAddress', 'PreviousStreetAddress1', 
-  'PreviousStreetAddress2', 'PreviousCity', 'PreviousState', 'PreviousZip', 'BadImage', 'QC_I', 'IC', 'ICS', 'ICZ', 'IMS', 'ICZ', 'IPS', 'IPZ', 'ECS', 
+  'EmailAddress', 'Batch_ID', 'County', 'PreviousCounty', 'Voulnteer', 'License', 'PreviousName', 'FullPreviousStreetAddress', 'PreviousStreetAddress1', 
+  'PreviousStreetAddress2', 'PreviousCity', 'PreviousState', 'PreviousZip', 'BadImage', 'Date', 'QC_I', 'IC', 'ICS', 'ICZ', 'IMS', 'IMZ', 'IPS', 'IPZ', 'ECS', 
   'EMS', 'EPS', 'CIS', 'CZIS', 'MZIS', 'PZIS', 'CZIC'
   ]
   data = run(readCSV(sys.argv[1]))

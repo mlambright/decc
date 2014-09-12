@@ -14,7 +14,7 @@ def getBatches(cursor):
   return batchDict
 
 
-def writeFile(dictList, outputFile):
+def writeFile(dictList, outputFile, headerList):
   with open(outputFile, 'w') as output:
     dwObject = DictWriter(output, headerList, restval = '', delimiter = ',')
     dwObject.writeheader()
@@ -55,16 +55,25 @@ def processXLSX(inputFile, db, cursor):
                       WHERE id = {1};
                       '''.format(countDict[key], key))
     db.commit()
-  return dictList
+  return dictList, headerList
   
 
 def main():
+  headers = [
+  'Batch_Name', 'Citizenship', 'AGE', 'FullDOB', 'DOBmm', 'DOBdd', 'DOByy', 'FirstName', 'MiddleName', 'LastName', 'Suffix', 'FullHomePhone', 
+  'HomeAreaCode', 'HomePhone', 'FullCurrentStreetAddress', 'CurrentStreetAddress1', 'CurrentStreetAddress2', 'CurrentCity', 
+  'CurrentState', 'CurrentZip', 'FullMailingStreetAddress', 'MailingAddress1', 'MailingAddress2', 'MailingCity', 'MailingState', 'MailingZip', 'Race', 
+  'Party', 'Gender', 'FullDateSigned', 'DateSignedmm', 'Datesigneddd', 'Datesignedyy', 'FullMobilePhone', 'MobilePhoneAreaCode', 'MobilePhone', 
+  'EmailAddress', 'Batch_ID', 'County', 'PreviousCounty', 'Voulnteer', 'License', 'PreviousName', 'FullPreviousStreetAddress', 'PreviousStreetAddress1', 
+  'PreviousStreetAddress2', 'PreviousCity', 'PreviousState', 'PreviousZip', 'BadImage', 'Date', 'QC_I', 'IC', 'ICS', 'ICZ', 'IMS', 'IMZ', 'IPS', 'IPZ', 'ECS', 
+  'EMS', 'EPS', 'CIS', 'CZIS', 'MZIS', 'PZIS', 'CZIC'
+  ]
   ##MAKE ANY CONNECTION CHANGES HERE
   db = psycopg2.connect(host = HOST, database = DB, user = USER)
   cursor = db.cursor()
-  processXLSX(sys.argv[1], db, cursor)
-  dictList = vrqc.run(dictList, sys.argv[2])
-  writeFile(dictList, sys.argv[2])
+  dictList, headerList = processXLSX(sys.argv[1], db, cursor)
+  dictList = vrqc.run(dictList)
+  writeFile(dictList, sys.argv[2], headers)
 
 
 if __name__ == '__main__':
