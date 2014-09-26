@@ -16,6 +16,10 @@ def getBatches(cursor):
 
 def writeFile(dictList, outputFile, headerList):
   with open(outputFile, 'w') as output:
+    for field in dictList[0]:
+      if field not in headerList:
+        headerList.append(field)
+
     dwObject = DictWriter(output, headerList, restval = '', delimiter = ',')
     dwObject.writeheader()
     for row in dictList:
@@ -25,7 +29,7 @@ def writeFile(dictList, outputFile, headerList):
 def processXLSX(inputFile, db, cursor):
   worksheet = xlrd.open_workbook(inputFile).sheet_by_index(0)
   headers = dict( (i, worksheet.cell_value(0, i) ) for i in range(worksheet.ncols) ) 
-  drObject = ( dict( (headers[j], worksheet.cell_value(i, j)) for j in headers ) for i in range(1, worksheet.nrows) )
+  drObject = ( dict( (headers[j], worksheet.cell_value(i, j)) for j in headers ) for i in range(0, worksheet.nrows) )
   headerList = []
   for key in headers:
     headerList.append(headers[key])
@@ -42,6 +46,7 @@ def processXLSX(inputFile, db, cursor):
     break
   for item in drObject:
     batchID = int(item[batchIDfieldName])
+
     item['Batch_Name'] = batchDict[str(batchID)]
     if str(batchID) not in countDict.keys():
       countDict[str(batchID)] = 1
@@ -64,16 +69,19 @@ def main():
   'HomeAreaCode', 'HomePhone', 'FullCurrentStreetAddress', 'CurrentStreetAddress1', 'CurrentStreetAddress2', 'CurrentCity', 
   'CurrentState', 'CurrentZip', 'FullMailingStreetAddress', 'MailingAddress1', 'MailingAddress2', 'MailingCity', 'MailingState', 'MailingZip', 'Race', 
   'Party', 'Gender', 'FullDateSigned', 'DateSignedmm', 'Datesigneddd', 'Datesignedyy', 'FullMobilePhone', 'MobilePhoneAreaCode', 'MobilePhone', 
-  'EmailAddress', 'Batch_ID', 'County', 'PreviousCounty', 'Voulnteer', 'License', 'PreviousName', 'FullPreviousStreetAddress', 'PreviousStreetAddress1', 
-  'PreviousStreetAddress2', 'PreviousCity', 'PreviousState', 'PreviousZip', 'BadImage', 'Date', 'QC_I', 'IC', 'ICS', 'ICZ', 'IMS', 'IMZ', 'IPS', 'IPZ', 'ECS', 
+  'EmailAddress', 'Batch_ID', 'County', 'PreviousCounty', 'Vote Mail', 'Voulnteer', 'License', 'PreviousName', 'FullPreviousStreetAddress', 'PreviousStreetAddress1', 
+  'PreviousStreetAddress2', 'PreviousCity', 'PreviousState', 'PreviousZip', 'Former County', 'BadImage', 'Date', 'QC_I', 'IC', 'ICS', 'ICZ', 'IMS', 'IMZ', 'IPS', 'IPZ', 'ECS', 
   'EMS', 'EPS', 'CIS', 'CZIS', 'MZIS', 'PZIS', 'CZIC'
   ]
   ##MAKE ANY CONNECTION CHANGES HERE
   db = psycopg2.connect(host = HOST, database = DB, user = USER)
   cursor = db.cursor()
   dictList, headerList = processXLSX(sys.argv[1], db, cursor)
-  dictList = vrqc.run(dictList)
-  writeFile(dictList, sys.argv[2], headers)
+  if str(raw_input('Is this VR? (type "y" if yes) ')).lower() == 'y': 
+    dictList = vrqc.run(dictList)
+    writeFile(dictList, sys.argv[2], headers)
+  else:
+    writeFile(dictList, sys.argv[2], headerList)
 
 
 if __name__ == '__main__':

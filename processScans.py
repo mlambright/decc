@@ -121,8 +121,8 @@ def processPDF(PATH, outputPATH, startNum, partID, cursor, db):
                       (id, client_filename, vendor_filename,
                       item_count, submission_date, processed_date,
                       part_id, original_filename)
-                      VALUES ({0}, '{1}', '{2}', {3}, current_date, current_date, {4}, 1)
-                      '''.format(batchID, clientFilename, vendorFilename, page_count, partID))
+                      VALUES ({0}, '{1}', '{2}', {3}, current_date, current_date, {4}, '{1}')
+                      '''.format(batchID, clientFilename.replace("'","''"), vendorFilename, page_count, partID))
     shutil.move(item, outfile)
     batchID += 1
   db.commit()
@@ -139,7 +139,7 @@ def processPhysical(PATH, outputPATH, partID, startNum, db, cursor):
       rowInfo = item
       cursor.execute('''INSERT INTO decc_form_batch (id, vendor_filename, client_filename, submission_date, 
                         processed_date, part_id, original_filename) 
-                        VALUES ('{0}', '{0}', '{1}', current_date, current_date, {2}, '1');
+                        VALUES ('{0}', '{0}', '{1}', current_date, current_date, {2}, '{1}');
                         '''.format(ID, item['Batch Name'], partID))
       db.commit()
       rowInfo['Batch ID'] = "%010d" % ID
