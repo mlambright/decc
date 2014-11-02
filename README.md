@@ -1,3 +1,6 @@
+#Deprecated DECC Repository
+This repository has been replaced by [EA-Tools](https://github.com/mlambright/EA-Tools) as of the 2014 election cycle
+
 ##DECC
 The scripts in this repo can be used to process files for use in the ***DECC*** project.
 
